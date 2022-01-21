@@ -163,11 +163,12 @@ def useful_stuff(data_loader, files ,params, cols, folder=None):
     nombreBucketDestino = 'stnglambdaoutput'
     nombreBucketPut ='s3://stnglambdaoutput/'
 
-    folder2 = getFolder()
-    folder2 = folder + folder2
+    name = getFolder()
+    folder2 = folder + name
 
     s3.put_object(Bucket=nombreBucketDestino, Key=folder2)
     df_.to_csv(path_or_buf=nombreBucketPut+folder2+str(int(df_.esn.unique()))+".csv",sep=';')
+    df_.to_csv(path_or_buf=nombreBucketPut+folder+'Historico/'+str(int(df_.esn.unique()))+"_"+name+".csv",sep=';')
 
 ##OK
 def computing(esn_list,params, cols, folder=None):

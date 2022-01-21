@@ -140,6 +140,12 @@ def cols_adquirer():
     return cols, params
 
 
+egt_listinc = ['EGT-01', 'EGT-02', 'EGT-03', 'EGT-04', 'EGT-05', 'EGT-06', 'EGT-07',
+               'EGT-08', 'EGT-09', 'EGT-10', 'EGT-11', 'EGT-12', 'EGT-13', 'EGT-14',
+               'EGT-15', 'EGT-16', 'EGT-17', 'EGT-18','IMP-LB', 'IMP-RB', 'IMP-RB (MCRS)',
+               'IMT-LBF', 'IMT-LBR', 'IMT-RBF', 'IMT-RBR', 'IMT-LBM', 'IMT-RBM']
+
+
 def useful_stuff(data_loader, files ,params, cols, folder=None):
     #df = delayed(data_loader)(files)
     df = data_loader(files)
@@ -159,6 +165,12 @@ def useful_stuff(data_loader, files ,params, cols, folder=None):
         else:
             df_.drop(col, axis=1, inplace=True)
 
+    for col in egt_listinc:
+        if col in df_.columns:
+            continue
+        else:
+            df_[col] = '0'
+
     #seteo path
     nombreBucketDestino = 'stnglambdaoutput'
     nombreBucketPut ='s3://stnglambdaoutput/'
@@ -168,7 +180,6 @@ def useful_stuff(data_loader, files ,params, cols, folder=None):
 
     s3.put_object(Bucket=nombreBucketDestino, Key=folder2)
     df_.to_csv(path_or_buf=nombreBucketPut+folder2+str(int(df_.esn.unique()))+".csv",sep=';')
-    df_.to_csv(path_or_buf=nombreBucketPut+folder+'Historico/'+str(int(df_.esn.unique()))+"_"+name+".csv",sep=';')
 
 ##OK
 def computing(esn_list,params, cols, folder=None):

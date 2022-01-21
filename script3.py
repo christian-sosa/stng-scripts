@@ -84,7 +84,6 @@ def concat_list():
     #7 dias antes
     data2 = df_loaderPath2()
 
-
     prior_increment_list = [int(data1[i].split('/')[-1].split('.')[0]) for i in range(len(data1))]
     current_increment_list = [int(data2[i].split('/')[-1].split('.')[0]) for i in range(len(data2))]
 
@@ -128,12 +127,15 @@ def df_inc_prep(esn, print_info=False):
     df_inc = drop_cols(df_inc, imp_listinc)
     df_inc = drop_cols(df_inc, imt_listinc)
     df_inc.drop(["esn"], axis=1, inplace=True)
+    
 
     if print_info is True: print(df_inc.info())
 
     return df_inc
 
 def df_concat(df, df_inc):
+    print(df_inc.columns)
+    print(df.columns)
     df.columns = df_inc.columns
     df_concat_ = df.append(df_inc)
     assert df_concat_.shape[0] == df.shape[0] + df_inc.shape[0]
@@ -158,7 +160,7 @@ def weekly_increment(current_list, prior_list):
             df_inc = pd.read_csv('s3://stnglambdaoutput/Paso3/Historico/' +str(esn)+'.csv', 
                                  parse_dates=["devicetimestamp"], 
                                  index_col="devicetimestamp"
-                                 ,delimiter= ';')
+                                 ,delimiter= ',')
             df_inc.to_csv(folder_PATH+ str(esn)+".csv", index_label='devicetimestamp')
 
 egt_listinc = ['EGT-01', 'EGT-02', 'EGT-03', 'EGT-04', 'EGT-05', 'EGT-06', 'EGT-07',

@@ -58,20 +58,6 @@ def df_loaderPath2():
     return folders
 
 def drop_cols(df, to_drop_list):
-    """
-    Function used to drop columns after loading data. It reduces the number of columns of the Dataframe in terms of the
-    list passed
-    :param df: DataFrame
-    :param to_drop_list: List of columns to drop from the DataFrame
-    :return: Reduced Dataframe
-
-    Example
-    >> imp_listinc = ['IMP-LB', 'IMP-RB', 'IMP-RB (MCRS)']
-    >> df_inc = pd.read_csv("66301108.csv")
-    >> df_inc.shape # (245,38)
-    >> df_inc = drop_cols(df_inc, imp_listinc)
-    >> df_inc.shape # (245, 13)
-    """
     to_drop = [col for col in to_drop_list if col in df.columns]
     df_ = df.drop(to_drop, axis=1)
     # print(df_.shape)
@@ -87,10 +73,7 @@ def concat_list():
     prior_increment_list = [int(data1[i].split('/')[-1].split('.')[0]) for i in range(len(data1))]
     current_increment_list = [int(data2[i].split('/')[-1].split('.')[0]) for i in range(len(data2))]
 
-    #prior historico
-    #current 7 dias
     return current_increment_list, prior_increment_list
-    #return prior_increment_list, current_increment_list
 
 
 def df_prep(esn, print_info=False):

@@ -32,7 +32,7 @@ def getFolder():
         count = 2 + aux
         folder = HOY - timedelta(days=count)
         folder = folder.strftime('%Y%m%d')
-        folder = folder #+ '/'
+        folder = folder + '/'
     return folder
 
 #perfect
@@ -50,7 +50,7 @@ def df_loader():
     i = 0
     my_bucket = s3resource.Bucket('stnglambdaoutput')
     folder = getFolder()
-    folder = 'Paso3/' #+ folder
+    folder = 'Paso3/' + folder
     for object_summary in my_bucket.objects.filter(Prefix=folder):
         if (i == 0):
             i += 1
@@ -65,7 +65,8 @@ def esn_list(data):
 
 
 def df_inc_loader(esn,folder):
-    pathforcsv = 's3://stnglambdaoutput/Paso3/'
+    pathforcsv = getFolder()
+    pathforcsv = 's3://stnglambdaoutput/Paso3/' + pathforcsv
     df = pd.read_csv(pathforcsv+str(esn)+".csv", sep=',', parse_dates=["devicetimestamp"], index_col="devicetimestamp")
     return df
 
@@ -112,13 +113,6 @@ def synchronizer(atf_engine_resampled, ad_h_unit):
     atf_engine_resampled["rul"] = atf_engine_resampled.index.map(lambda x: (x[-1] - x) / np.timedelta64(3600 * 24, 's'))
     atf_engine_resampled["esn"] = np.repeat(ad_h_unit.esn.unique(), atf_engine_resampled.shape[0])
 
-    #atf_engine_resampled["Year"] = [str(x)[:4] for x in atf_engine_resampled["devicetimestamp"]]
-    #atf_engine_resampled["Month"] = [str(x)[5:7] for x in atf_engine_resampled["devicetimestamp"]]
-    #atf_engine_resampled["Day"] = [str(x)[8:10] for x in atf_engine_resampled["devicetimestamp"]]
-
-
-    #for i, row in atf_engine_resampled.iterrows():
-        
 
 
     return atf_engine_resampled
@@ -165,7 +159,7 @@ def lambda_handler(event, context):
 
     nombreBucketDestino = 'stnglambdaoutput'
     folder = getFolder()
-    folder = 'Paso4/' + folder + '/'
+    folder = 'Paso4/' + folder 
     s3.put_object(Bucket=nombreBucketDestino, Key=folder)
 
     data = df_loader()

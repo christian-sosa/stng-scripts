@@ -131,12 +131,12 @@ def paramsNN(df):
 
 ##OK
 def cols_adquirer():
-    FILE_REQUEST = 's3://stnglambdainput/parametro.csv'
-    paramNN=pd.read_csv(FILE_REQUEST, header=0, sep=';',encoding= 'unicode_escape')
+    FILE_REQUEST = 's3://stnglambdainput/parametroNN.csv'
+    paramNN=pd.read_csv(FILE_REQUEST, header=0, sep=',',encoding= 'unicode_escape')
     ## lee el csv
     params = {str(id_): name for name, id_ in zip(paramNN["nombre"],paramNN["id_parametro_specto"])}
     cols = ['esn','rpm']
-    cols.extend((list(params.keys())))
+    cols.extend(list(params.values()))
     return cols, params
 
 
@@ -147,29 +147,20 @@ egt_listinc = ['EGT-01', 'EGT-02', 'EGT-03', 'EGT-04', 'EGT-05', 'EGT-06', 'EGT-
 
 
 def useful_stuff(data_loader, files ,params, cols, folder=None):
-    #df = delayed(data_loader)(files)
-    df = data_loader(files)
-    #with ProgressBar():
-    #    df_ = df.compute()
-    df_ = df.copy()
+    df = delayed(data_loader)(files)
+    with ProgressBar():
+        df_ = df.compute()
         
     df_.sort_index(inplace=True)
     df_ = df_.apply(lambda col: col.mask(col.isna(),np.mean(col)), axis=0)
-
-    for col in df_:
-        if col in cols:
-            if col == 'esn' or col == 'rpm':
-                continue
-            else:
-                df_.rename(columns={col:params[col]}, inplace=True)
-        else:
-            df_.drop(col, axis=1, inplace=True)
-
-    for col in egt_listinc:
+    for col in params.keys():
         if col in df_.columns:
-            continue
+            df_.rename(columns={col:params[col]}, inplace=True)
         else:
-            df_[col] = '0'
+            df_.loc[:,params[col]] = np.nan
+    
+    df_ = df_[cols]
+
 
     #seteo path
     nombreBucketDestino = 'stnglambdaoutput'

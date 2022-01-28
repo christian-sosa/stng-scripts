@@ -1,0 +1,37 @@
+Pasos environment SageMaker
+
+/// Crear el entorno. 
+/// -n nombre del entorno
+conda create -n myenv2 python=3.8 
+
+#The following packages will be downloaded:
+...
+
+ Proceed ([y]/n)? y
+
+///Acceder al entorno creado
+ conda activate myenv2
+
+/// Instalar librerias 
+ pip install boto3
+ pip install warnings
+ pip install numpy
+ pip install pandas
+ pip install datetime
+ pip install seaborn
+ pip install sklearn  
+ pip install fsspec
+
+ pip install tensorflow_probability
+
+/// Revisar version de tensor flow probability
+ python -c "import tensorflow_probability as tfp; print (tfp.__version__)"
+
+ pip install tensorflow
+
+/// Revisar version instalada de tensorflow
+ python -c "import tensorflow as tf; print (tf.__version__)"
+
+ conda install -c anaconda ipykernel
+ Proceed ([y]/n)? y
+ python -m ipykernel install --user --name=myenv2

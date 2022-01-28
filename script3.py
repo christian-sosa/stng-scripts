@@ -13,10 +13,10 @@ def getFolder():
     dia = HOY - timedelta(days=2)
     dia = dia.strftime('%A')
   
-    dayOfWeek = ["Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]
+    dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
     for x in dayOfWeek:
-        if dia == x:
+        if x == dia:
             aux = i
         i += 1
         
@@ -138,6 +138,7 @@ def weekly_increment(current_list, prior_list):
             df_inc = df_inc_prep(esn=esn)
             df_concat_ = df_concat(df, df_inc)
             df_concat_.to_csv(folder_PATH+str(esn)+".csv", index_label='devicetimestamp')
+            df_concat_.to_csv('s3://stnglambdaoutput/Paso3/Historico/'+str(esn)+".csv", index_label='devicetimestamp')
         else:
             print(f"{i} {esn} no in current_list")
             df_inc = pd.read_csv('s3://stnglambdaoutput/Paso3/Historico/' +str(esn)+'.csv', 

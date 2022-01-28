@@ -19,10 +19,10 @@ def getFolder():
     dia = HOY - timedelta(days=2)
     dia = dia.strftime('%A')
   
-    dayOfWeek = ["Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]
+    dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
     for x in dayOfWeek:
-        if dia == x:
+        if x == dia:
             aux = i
         i += 1
         

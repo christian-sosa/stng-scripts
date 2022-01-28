@@ -17,10 +17,10 @@ def getFolder():
     dia = HOY - timedelta(days=2)
     dia = dia.strftime('%A')
   
-    dayOfWeek = ["Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]
+    dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
     for x in dayOfWeek:
-        if dia == x:
+        if x == dia:
             aux = i
         i += 1
         
@@ -143,7 +143,7 @@ def weekly_increment_sync(esn_list_, ad_df, folder):
         df_ = op_hours_comp(df_, df_ad_h=ad_df, unit=unit_, esn=esn)
         nombreBucketPut ='s3://stnglambdaoutput/'
         df_.to_csv(path_or_buf=nombreBucketPut+folder+str(esn)+".csv", index_label='devicetimestamp')
-        df_.to_parquet(nombreBucketPut+folder+str(esn)+".gzip.parquet",index='devicetimestamp', compression='gzip')
+        #df_.to_parquet(nombreBucketPut+folder+str(esn)+".gzip.parquet",index='devicetimestamp', compression='gzip')
 
 
 def lambda_handler(event, context):

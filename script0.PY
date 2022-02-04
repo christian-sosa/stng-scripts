@@ -10,14 +10,8 @@ s3 = boto3.client('s3')
 
 def getFolder():
     nombreBucketDestino = 'stnglambdaoutput'
-
     HOY=dt.today()
-    folder = HOY - timedelta(days=2)
-    folder = folder.strftime('%Y%m%d')
-    folder = 'Paso1/' +folder + '/'
-    
-    dia = HOY - timedelta(days=2)
-    dia = dia.strftime('%A')
+    dia = (HOY - timedelta(days=3)).strftime('%A')
   
     dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
@@ -26,13 +20,11 @@ def getFolder():
             aux = i
         i += 1
         
+    count = 4 - aux
+    folder = 'Paso1/' + (HOY + timedelta(days=count)).strftime('%Y%m%d') + '/'
+        
     if aux == 0:
         s3.put_object(Bucket=nombreBucketDestino, Key=folder)
-    else:
-        count = 2 + aux
-        folder = HOY - timedelta(days=count)
-        folder = folder.strftime('%Y%m%d')
-        folder = 'Paso1/' +folder + '/'
     return folder
 
 def lambda_handler(event, context):

@@ -10,8 +10,7 @@ s3 = boto3.client('s3')
 
 def getFolder():
     HOY=dt.today()
-    dia = HOY - timedelta(days=2)
-    dia = dia.strftime('%A')
+    dia = (HOY - timedelta(days=3)).strftime('%A')
   
     dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
@@ -20,39 +19,30 @@ def getFolder():
             aux = i
         i += 1
         
-    if aux == 0:
-        folder = HOY - timedelta(days=2)
-        folder = folder.strftime('%Y%m%d')
-        folder = folder + '/'
-    else:
-        count = 2 + aux
-        folder = HOY - timedelta(days=count)
-        folder = folder.strftime('%Y%m%d')
-        folder = folder + '/'
+    count = 4 - aux
+    folder = (HOY + timedelta(days=count)).strftime('%Y%m%d') + '/'
     return folder
 
 def df_loaderPath1():
     folders = []
-    i = 0
     my_bucket = s3resource.Bucket('stnglambdaoutput')
     folder = getFolder()
     folder = 'Paso3/Historico/'
     for object_summary in my_bucket.objects.filter(Prefix=folder):
-        if (i == 0):
-            i += 1
+        if (object_summary.key == folder):
+            continue
         else: 
             folders.append(object_summary.key)
     return folders
 
 def df_loaderPath2():
     folders = []
-    i = 0
     my_bucket = s3resource.Bucket('stnglambdaoutput')
     folder = getFolder()
     folder = 'Paso2/' + folder
     for object_summary in my_bucket.objects.filter(Prefix=folder):
-        if (i == 0):
-            i += 1
+        if (object_summary.key == folder):
+            continue
         else: 
             folders.append(object_summary.key)
     return folders
@@ -117,8 +107,6 @@ def df_inc_prep(esn, print_info=False):
     return df_inc
 
 def df_concat(df, df_inc):
-    print(df_inc.columns)
-    print(df.columns)
     df.columns = df_inc.columns
     df_concat_ = df.append(df_inc)
     assert df_concat_.shape[0] == df.shape[0] + df_inc.shape[0]
@@ -155,8 +143,6 @@ imt_listinc = ['IMT-LBF', 'IMT-LBR', 'IMT-RBF', 'IMT-RBR', 'IMT-LBM', 'IMT-RBM']
 
 def lambda_handler(event, context):
     current_increment_list, prior_increment_list = concat_list()
-    print(current_increment_list)
-    print(prior_increment_list)
 
     weekly_increment(current_list=current_increment_list, prior_list=prior_increment_list)
     return {

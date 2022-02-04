@@ -15,8 +15,7 @@ s3 = boto3.client('s3')
 
 def getFolder():
     HOY=dt.today()
-    dia = HOY - timedelta(days=2)
-    dia = dia.strftime('%A')
+    dia = (HOY - timedelta(days=3)).strftime('%A')
   
     dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
@@ -25,27 +24,19 @@ def getFolder():
             aux = i
         i += 1
         
-    if aux == 0:
-        folder = HOY - timedelta(days=2)
-        folder = folder.strftime('%Y%m%d')
-        folder = folder + '/'
-    else:
-        count = 2 + aux
-        folder = HOY - timedelta(days=count)
-        folder = folder.strftime('%Y%m%d')
-        folder = folder + '/'
+    count = 4 - aux
+    folder = (HOY + timedelta(days=count)).strftime('%Y%m%d') + '/'
     return folder
 
 ##OK
 def esn_list():
     folders = []
-    i = 0
     my_bucket = s3resource.Bucket('stnglambdaoutput')
     folder = getFolder()
     folder = 'Paso1/' + folder
     for object_summary in my_bucket.objects.filter(Prefix=folder):
-        if (i == 0):
-            i += 1
+        if (object_summary.key == folder):
+            continue
         else: 
             folders.append(object_summary.key)
 

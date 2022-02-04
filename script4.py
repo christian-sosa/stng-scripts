@@ -14,8 +14,7 @@ warnings.filterwarnings("ignore")
 
 def getFolder():
     HOY=dt.today()
-    dia = HOY - timedelta(days=2)
-    dia = dia.strftime('%A')
+    dia = (HOY - timedelta(days=3)).strftime('%A')
   
     dayOfWeek = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     i=0
@@ -24,15 +23,8 @@ def getFolder():
             aux = i
         i += 1
         
-    if aux == 0:
-        folder = HOY - timedelta(days=2)
-        folder = folder.strftime('%Y%m%d')
-        folder = folder + '/'
-    else:
-        count = 2 + aux
-        folder = HOY - timedelta(days=count)
-        folder = folder.strftime('%Y%m%d')
-        folder = folder + '/'
+    count = 4 - aux
+    folder = (HOY + timedelta(days=count)).strftime('%Y%m%d') + '/'
     return folder
 
 #perfect
@@ -47,13 +39,12 @@ def df_loader():
     >> loaded_data = df_loader(file_path=path)
     """
     folders = []
-    i = 0
     my_bucket = s3resource.Bucket('stnglambdaoutput')
     folder = getFolder()
     folder = 'Paso3/' + folder
     for object_summary in my_bucket.objects.filter(Prefix=folder):
-        if (i == 0):
-            i += 1
+        if (object_summary.key == folder):
+            continue
         else: 
             folders.append(object_summary.key)
     return folders
@@ -163,7 +154,9 @@ def lambda_handler(event, context):
     s3.put_object(Bucket=nombreBucketDestino, Key=folder)
 
     data = df_loader()
+    print(data)
     esn_list_in = esn_list(data=data)
+    print(esn_list_in)
     weekly_increment_sync(esn_list_=esn_list_in, ad_df=advanced_h, folder = folder)
 
     return {
